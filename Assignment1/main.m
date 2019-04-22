@@ -2,7 +2,7 @@ clear all;clc;close all
 addpath('Data/');
 load('Data/source.mat')
 load('Data/target.mat')
-[R, t] = ICP2(source, target);
+[R, t] = ICP(source, target);
 tr = R*source+repmat(t,1,size(source,2));
 figure
 hold on

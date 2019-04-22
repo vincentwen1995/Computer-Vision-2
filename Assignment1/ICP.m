@@ -1,44 +1,37 @@
-function [R, t] = ICP(A1, A2)
-% ICP  Perform Iterative Closest Point algorithm to find R and t from
-% A1(base) to A2(target).
-% Args:
-% A1 [double]: base points of shape N x d 
-% A2 [double]: target points of shape N x d
-
-% Make backups for original point clouds.
-A1_org = A1;
-A2_org = A2;
-% Define parameters.
-epsilon = 1e-6;
-n = size(A1, 1);
-d = size(A1, 2);
-% Initialize R and t.
+function [R, t] = ICP2(A1,A2)
+% Backup the inputs
+Source = A1;
+Target = A2;
+% Get the sizes of the inputs
+n1 = size(A1,2);
+n2 = size(A2,2);
+d = size(A1,1);
+% Initialize R = I, t = 0
 R = eye(d);
-t = 0;
-rms = 9999;
+t = zeros(d,1);
+% Define parameters
+epsilon = 1e-6;
+rms = 100;
 last_rms = 0;
-iter = 1;
 while abs(rms - last_rms) > epsilon
-    % Find smallest euclidean distances from A1 to A2 and corresponding
-    % mapping.
-    [dists, phi] = pdist2(A2, A1, 'euclidean','Smallest', 1);
-    A2 = A2(phi, :);
-    % Compute centroids of A1 and A2.
-    A1c = mean(A1, 1);
-    A2c = mean(A2, 1);
-    % Compute centered A1 and A2.
-    A1_centered = A1 - A1c;
-    A2_centered = A2 - A2c;
-    % Compute the covariance matrix.
-    S = A1_centered' * A2_centered;
-    % Compute SVD and R, t accordingly.
-    [U, Sigma, V] = svd(S);
-    diags = cat(2, ones(1, size(Sigma, 1) - 1), [det(V * U')]);
-    R = V * diag(diags) * U';    
-    t = R * A1c' - A2c';   
-    % Update RMS.
-    last_rms = rms;
-    rms = sqrt(sum(dists) / n);
-    iter = iter + 1;
+% Match with bruteForce
+[min_dist, match] = pdist2(Target', A1', 'euclidean','Smallest', 1);
+last_rms = rms;
+rms = sqrt(sum(min_dist.^2) / size(min_dist,2));
+A2=Target(:,match);
+% Compute the centered vectors
+A1_bar =mean(A1,2);
+A2_bar =mean(A2,2);
+C1=A1-A1_bar;
+C2=A2-A2_bar;
+% Singular value decomposition
+[U,~,V] = svd(C1 * C2');
+Ri = V*diag([1 1 det(U*V')])*U';
+ti = A2_bar-R*A1_bar;
+% Update R and t
+R = Ri*R;
+t = Ri*t + ti;
+% Apply the latest transformation
+A1 = R*Source+repmat(t,1,n1);
 end
 end
