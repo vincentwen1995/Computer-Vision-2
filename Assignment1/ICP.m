@@ -46,6 +46,6 @@ while abs(rms - last_rms) > epsilon
     A1 = R * Source + t;
     iter = iter + 1;
 end
-sprintf('Iteration: %d', iter);
+fprintf('Iteration: %d\n', iter);
 end
 
