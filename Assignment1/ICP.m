@@ -1,4 +1,4 @@
-function [R, t] = ICP2(A1,A2)
+function [R, t] = ICP(A1,A2)
 % Backup the inputs
 Source = A1;
 Target = A2;
@@ -13,11 +13,13 @@ t = zeros(d,1);
 epsilon = 1e-6;
 rms = 100;
 last_rms = 0;
+count=0;
 while abs(rms - last_rms) > epsilon
 % Match with bruteForce
 [min_dist, match] = pdist2(Target', A1', 'euclidean','Smallest', 1);
 last_rms = rms;
 rms = sqrt(sum(min_dist.^2) / size(min_dist,2));
+count=count+1;
 A2=Target(:,match);
 % Compute the centered vectors
 A1_bar =mean(A1,2);
@@ -31,7 +33,16 @@ ti = A2_bar-R*A1_bar;
 % Update R and t
 R = Ri*R;
 t = Ri*t + ti;
+R_mag(count)=norm(R);
+t_mag(count)=norm(t);
 % Apply the latest transformation
 A1 = R*Source+repmat(t,1,n1);
 end
+% Plot the magnitude
+subplot(2,1,1)
+plot(R_mag)
+title('Magnitude of R');
+subplot(2,1,2)
+plot(t_mag)
+title('Magnitude of t');
 end
