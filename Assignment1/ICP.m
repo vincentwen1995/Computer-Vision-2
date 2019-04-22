@@ -33,10 +33,9 @@ while abs(rms - last_rms) > epsilon
     S = A1_centered' * A2_centered;
     % Compute SVD and R, t accordingly.
     [U, Sigma, V] = svd(S);
-    V = V';
     diags = cat(2, ones(1, size(Sigma, 1) - 1), [det(V * U')]);
     R = V * diag(diags) * U';    
-    t = R * A1c' - A2c';
+    t = R * A1c' - A2c';   
     % Update RMS.
     last_rms = rms;
     rms = sqrt(sum(dists) / n);
