@@ -10,7 +10,7 @@ merged_color = ones(1,size(target,2));
 for i = 1:99
     fprintf("Iter:%d\n",i);
     source=load_pcd(i);
-    [R, t] = ICP(source,target,1000);
+    [R, t] = ICP_variants(source,target, 'uniform');
     rotation = R * rotation;
     translation = bsxfun(@plus, R * translation, t);
     source_transformed=bsxfun(@plus, rotation * source, translation);

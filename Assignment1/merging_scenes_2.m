@@ -7,13 +7,13 @@ translation = zeros(3, 1);
 source = load_pcd(0);
 merged_frame = source;
 merged_color = ones(1,size(source,2));
-for i = 1:99
+for i = 1:5:99
     fprintf("Iter:%d\n",i);
     % New frame as target
     target = load_pcd(i);
     % Merged frame as source 
     source= merged_frame;
-    [R, t] = ICP(source,target,1000);
+    [R, t] = ICP_variants(source,target, 'random');
     rotation = R * rotation;
     translation = bsxfun(@plus, R * translation, t);
     merged_frame =bsxfun(@plus, rotation * source, translation);

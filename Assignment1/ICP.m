@@ -28,6 +28,7 @@ stats.R_mag = {};
 stats.t_mag = {};
 stats.iter = 0;
 while abs(rms - last_rms) > epsilon
+    stats.rms{end + 1} = rms;
     stats.iter=stats.iter+1;
 %     [dist, phi] = pdist2(A2', A1', 'euclidean','Smallest', 1);
     % Find smallest euclidean distances from A1 to A2 and corresponding
@@ -45,7 +46,7 @@ while abs(rms - last_rms) > epsilon
     last_rms = rms;
     rms = sqrt(mean(dist .^ 2));
     
-    fprintf("Iter:%d\t RMS:%f\n",stats.iter,rms);
+%     fprintf("Iter:%d\t RMS:%f\n",stats.iter,rms);
     A2_matched = A2(:, phi);
     % Compute centroids of A1 and A2.
     A1_bar = mean(A1, 2);
@@ -55,7 +56,8 @@ while abs(rms - last_rms) > epsilon
     A2_centered = bsxfun(@minus, A2_matched, A2_bar);
     % Compute SVD and R_tmp, t_tmp accordingly.    
     [U, ~, V] = svd(A1_centered * A2_centered');    
-    R_tmp = V * diag([1 1 det(U*V')]) * U';
+    diagonal = cat(2, ones(1, size(U, 2) - 1), [det(V * U')]); 
+    R_tmp = V * diag(diagonal) * U';
     t_tmp = A2_bar - R_tmp * A1_bar;
     % Update A1.
     A1 = bsxfun(@plus, R_tmp * A1, t_tmp);

@@ -15,7 +15,7 @@ switch option
     case 'normal'
         n = size(source, 2);
         normals = supplements;
-        neighbors = 5;
+        neighbors = 10;
         var_threshold = 5e-5;
         k = 1000;
         inds = {};                
