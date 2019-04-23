@@ -1,13 +1,12 @@
 % 3.1 Merging Scenes
 clear all;clc;close all;
 addpath('SupplementalCode/');
-addpath('fscatter3/');
 rotation = eye(3, 3);
 translation = zeros(3, 1);
 target = load_pcd(0);
 merged_frame = target;
 merged_color = ones(1,size(target,2));
-stepsize=9; % 2,4,10
+stepsize=1; % 2,4,10
 for i = stepsize:stepsize:99
     fprintf("Iter:%d\n",i);
     % New frame as source

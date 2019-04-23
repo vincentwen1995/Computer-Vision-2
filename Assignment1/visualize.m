@@ -1,4 +1,4 @@
-clear all;clc;close all;
+clc;close all;
 addpath('SupplementalCode/');
 addpath('fscatter3/');
 load('merging_scenes_1.mat')

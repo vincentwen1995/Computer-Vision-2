@@ -1,7 +1,6 @@
 % 3.2 Merging Scenes
 clear all;clc;close all;
 addpath('SupplementalCode/');
-addpath('fscatter3/');
 rotation = eye(3, 3);
 translation = zeros(3, 1);
 target = load_pcd(0);
