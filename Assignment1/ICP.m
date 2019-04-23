@@ -1,4 +1,5 @@
 function [R, t] = ICP(A1,A2)
+plot_mag=false;
 % Backup the inputs
 Source = A1;
 Target = A2;
@@ -10,7 +11,7 @@ d = size(A1,1);
 R = eye(d);
 t = zeros(d,1);
 % Define parameters
-epsilon = 1e-6;
+epsilon = 1e-3;
 rms = 100;
 last_rms = 0;
 count=0;
@@ -39,10 +40,12 @@ t_mag(count)=norm(t);
 A1 = R*Source+repmat(t,1,n1);
 end
 % Plot the magnitude
+if plot_mag
 subplot(2,1,1)
 plot(R_mag)
 title('Magnitude of R');
 subplot(2,1,2)
 plot(t_mag)
 title('Magnitude of t');
+end
 end
