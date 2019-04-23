@@ -39,8 +39,8 @@ while abs(rms - last_rms) > epsilon
     % Find smallest euclidean distances from A1 to A2 and corresponding
     % mapping.
 %     [dist, phi] = pdist2(Target', A1', 'euclidean', 'Smallest', 1);        
-    phi = knnsearch(Target', A1');
-    dist = sqrt(sum((A1 - Target(:, phi)).^2, 1));
+    [phi, dist] = knnsearch(Target', A1');
+%     dist_test = sqrt(sum((A1 - Target(:, phi)).^2, 1));
     
     % Reject 10% worst matchings in terms of euclidean distance.
     rej = 0.1;
