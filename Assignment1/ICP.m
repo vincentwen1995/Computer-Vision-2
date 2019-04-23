@@ -1,10 +1,16 @@
-function [R, t] = ICP(A1,A2)
+function [R, t, stats] = ICP(A1,A2, Flag, sample_rate)
 % ICP  Perform Iterative Closest Point algorithm to find R and t from
 % A1(base) to A2(target).
 % Args:
 % A1 [double]: base points of shape d x N 
 % A2 [double]: target points of shape d x N
+% Flag [bool]: flag for sampling per iteration.
 
+% If not specified, set the Flag false.
+if nargin == 2
+    Flag = false;
+    sample_rate = 1;
+end    
 % Make backups for original point clouds.
 Source = A1;
 Target = A2;
@@ -12,19 +18,39 @@ Target = A2;
 n1 = size(A1, 2);
 n2 = size(A2, 2);
 d = size(A1, 1);
-epsilon = 1e-6;
+epsilon = 1e-5;
 % Initialize R = I, t = 0
 R = eye(d);
 t = zeros(d, 1);
 rms = 9999;
 last_rms = 0;
-iter = 1;
+stats.rms = {};
+stats.R = {};
+stats.t = {};
+stats.R_mag = {};
+stats.t_mag = {};
+stats.iter = 1;
 while abs(rms - last_rms) > epsilon    
+    if Flag         
+        k = round(n1/sample_rate);
+        ind = randsample(n1, k);
+        A1 = A1(:, ind);
+    end
     % Find smallest euclidean distances from A1 to A2 and corresponding
     % mapping.
-    [dist, phi] = pdist2(Target', A1', 'euclidean', 'Smallest', 1);
+    [dist, phi] = pdist2(Target', A1', 'euclidean', 'Smallest', 1);    
+    
+    % Reject 10% worst matchings in terms of euclidean distance.
+    rej = 0.1;
+    [dist, sort_ind] = sort(dist);
+    keep_ind = 1:round((1 - rej) * length(sort_ind));
+    dist = dist(1 : length(keep_ind));
+    A1 = A1(:, sort_ind(keep_ind));
+    phi = phi(sort_ind(keep_ind));
+    
     last_rms = rms;    
-    rms = sqrt(mean(dist));    
+    rms = sqrt(mean(dist.^2)); 
+    stats.rms{end + 1} = rms;
     A2 = Target(:, phi);
     % Compute centroids of A1 and A2.
     A1_bar =mean(A1, 2);
@@ -41,11 +67,15 @@ while abs(rms - last_rms) > epsilon
     t_tmp = A2_bar - R * A1_bar;
     % Update R and t.
     R = R_tmp * R;
-    t = R_tmp * t + t_tmp;
+    t = R_tmp * t + t_tmp;    
+    % Record R and t and their corresponding magnitudes.
+    stats.R{end + 1} = R;
+    stats.t{end + 1} = t;
+    stats.R_mag{end + 1} = norm(R);
+    stats.t_mag{end + 1} = norm(t);    
     % Apply the latest transformation and update A1.
     A1 = R * Source + t;
-    iter = iter + 1;
+    stats.iter = stats.iter + 1;
 end
-fprintf('Iteration: %d\n', iter);
 end
 
