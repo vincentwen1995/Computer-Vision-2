@@ -51,13 +51,27 @@ option = 'normal';
 tr = bsxfun(@plus, R * source, t);
 [dist, ~] = pdist2(target', tr', 'euclidean', 'Smallest', 1);
 rms = sqrt(mean(dist.^2));
-fprintf('Method: all, rms: %f, iters: %d', rms, stats.iter);
+fprintf('Method: all, rms: %f, iters: %d\n', rms, stats.iter);
 
 [R, t, stats] = ICP_variants(source, target, 'uniform');
 tr = bsxfun(@plus, R * source, t);
 [dist, ~] = pdist2(target', tr', 'euclidean', 'Smallest', 1);
 rms = sqrt(mean(dist.^2));
-fprintf('Method: uinform, rms: %f, iters: %d', rms, stats.iter);
+fprintf('Method: uniform, rms: %f, iters: %d\n', rms, stats.iter);
+
+[R, t, stats] = ICP_variants(source, target, 'random');
+tr = bsxfun(@plus, R * source, t);
+[dist, ~] = pdist2(target', tr', 'euclidean', 'Smallest', 1);
+rms = sqrt(mean(dist.^2));
+fprintf('Method: random, rms: %f, iters: %d\n', rms, stats.iter);
+
+% [R, t, stats] = ICP_variants(source, target, 'normal', normal);
+% tr = bsxfun(@plus, R * source, t);
+% [dist, ~] = pdist2(target', tr', 'euclidean', 'Smallest', 1);
+% rms = sqrt(mean(dist.^2));
+% fprintf('Method: random, rms: %f, iters: %d\n', rms, stats.iter);
+
+
 
 
 function [source, target, normals] = load_frames(source_name, target_name)

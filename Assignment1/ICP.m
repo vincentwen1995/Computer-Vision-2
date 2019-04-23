@@ -15,6 +15,7 @@ n1 = size(A1, 2);
 n2 = size(A2, 2);
 d = size(A1, 1);
 epsilon = 1e-5;
+k = 1000;
 % Initialize R = I, t = 0
 R = eye(d);
 t = zeros(d, 1);
@@ -29,7 +30,12 @@ stats.t_mag = {};
 stats.iter = 0;
 while abs(rms - last_rms) > epsilon
     stats.rms{end + 1} = rms;
-    stats.iter=stats.iter+1;
+    stats.iter=stats.iter+1;    
+    A1_bk = A1;
+    if flag         
+        ind = randsample(n1, k);
+        A1 = A1(:, ind);        
+    end
 %     [dist, phi] = pdist2(A2', A1', 'euclidean','Smallest', 1);
     % Find smallest euclidean distances from A1 to A2 and corresponding
     % mapping.
@@ -60,6 +66,7 @@ while abs(rms - last_rms) > epsilon
     R_tmp = V * diag(diagonal) * U';
     t_tmp = A2_bar - R_tmp * A1_bar;
     % Update A1.
+    A1 = A1_bk;
     A1 = bsxfun(@plus, R_tmp * A1, t_tmp);
     % Update R and t.
     R = R_tmp * R;
