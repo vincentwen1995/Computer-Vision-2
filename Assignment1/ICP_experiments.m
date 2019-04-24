@@ -4,7 +4,6 @@ close all
 addpath('SupplementalCode')
 addpath('Data')
 addpath('Data/data')
-option = 'normal';
 
 %% Load, transform and plot toy data.
 % load('source.mat')
@@ -45,7 +44,7 @@ option = 'normal';
 
 %% Compare the variants w.r.t. speed and accuracy
 
-[source, target, normals] = load_frames('00', '10');
+[source, target, normals] = load_frames('00', '30');
 
 [R, t, stats] = ICP_variants(source, target, 'all');
 tr = bsxfun(@plus, R * source, t);
@@ -65,11 +64,11 @@ tr = bsxfun(@plus, R * source, t);
 rms = sqrt(mean(dist.^2));
 fprintf('Method: random, rms: %f, iters: %d\n', rms, stats.iter);
 
-% [R, t, stats] = ICP_variants(source, target, 'normal', normal);
-% tr = bsxfun(@plus, R * source, t);
-% [dist, ~] = pdist2(target', tr', 'euclidean', 'Smallest', 1);
-% rms = sqrt(mean(dist.^2));
-% fprintf('Method: random, rms: %f, iters: %d\n', rms, stats.iter);
+[R, t, stats] = ICP_variants(source, target, 'normal', normals);
+tr = bsxfun(@plus, R * source, t);
+[dist, ~] = pdist2(target', tr', 'euclidean', 'Smallest', 1);
+rms = sqrt(mean(dist.^2));
+fprintf('Method: normal, rms: %f, iters: %d\n', rms, stats.iter);
 
 
 
@@ -91,7 +90,7 @@ function [source, target, normals] = load_frames(source_name, target_name)
     source(far_inds, :) = [];
     normals(:, far_inds) = [];
     source = source';
-    normals = normals - source;
+%     normals = normals - source;
 
     target = readPcd(strcat(affix, target_name, '.pcd'));
     target = target(:, 1:3);
