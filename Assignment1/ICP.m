@@ -14,7 +14,7 @@ end
 n1 = size(A1, 2);
 n2 = size(A2, 2);
 d = size(A1, 1);
-epsilon = 1e-4;
+epsilon = 1e-5;
 k = 1000;
 % Initialize R = I, t = 0
 R = eye(d);
