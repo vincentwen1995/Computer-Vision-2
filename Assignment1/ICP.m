@@ -19,17 +19,16 @@ k = 1000;
 % Initialize R = I, t = 0
 R = eye(d);
 t = zeros(d, 1);
-rms = 9999;
+rms = 1;
 last_rms = 0;
 % Initialize statistics records.
-stats.rms = {};
+stats.rms = [];
 stats.R = {};
 stats.t = {};
 stats.R_mag = {};
 stats.t_mag = {};
 stats.iter = 0;
 while abs(rms - last_rms) > epsilon
-    stats.rms{end + 1} = rms;
     stats.iter=stats.iter+1;    
     A1_bk = A1;
     if flag         
@@ -51,8 +50,11 @@ while abs(rms - last_rms) > epsilon
     
     last_rms = rms;
     rms = sqrt(mean(dist .^ 2));
-    
-%     fprintf("Iter:%d\t RMS:%f\n",stats.iter,rms);
+    stats.rms(end + 1) = rms;
+    if(size(stats.rms,2)>100)
+        break;
+    end
+    fprintf("Iter:%d\t RMS:%f\n",stats.iter,rms);
     A2_matched = A2(:, phi);
     % Compute centroids of A1 and A2.
     A1_bar = mean(A1, 2);

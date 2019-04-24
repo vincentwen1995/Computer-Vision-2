@@ -1,0 +1,18 @@
+clear;clc;close all
+addpath('SupplementalCode')
+[source, target, normals] = load_frames('00', '10');
+[~,~,stats]=ICP_variants(source,target,"all");
+rms_all=stats.rms;
+[~,~,stats]=ICP_variants(source,target,"uniform");
+rms_uniform=stats.rms;
+[~,~,stats]=ICP_variants(source,target,"random");
+rms_random=stats.rms;
+% [~,~,stats]=ICP_variants(source,target,"normal");
+% rms_uniform=stats.rms;
+hold on;
+plot(rms_all);
+plot(rms_uniform);
+plot(rms_random);
+
+
+
