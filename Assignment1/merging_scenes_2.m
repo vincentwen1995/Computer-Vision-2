@@ -11,7 +11,7 @@ for i = stepsize:stepsize:99
     fprintf("Iter:%d\n",i);
     % New frame as source
     source = load_pcd(i);
-    [rotation, translation] = ICP(source,target,1000);
+    [rotation, translation] = ICP_uniform(source,target,1000);
     % Reverse Transform
     merged_frame =rotation'*bsxfun(@minus, merged_frame, translation);
     merged_frame = [merged_frame source];

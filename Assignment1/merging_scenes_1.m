@@ -11,7 +11,7 @@ for i = stepsize:stepsize:99
     fprintf("Iter:%d\n",i);
     % New frame as source
     source=load_pcd(i);
-    [R, t] = ICP(source,target,1000);
+    [R, t] = ICP_uniform(source,target,1000);
     rotation = R * rotation;
     translation = bsxfun(@plus, R * translation, t);
     source_transformed=bsxfun(@plus, rotation * source, translation);
