@@ -44,25 +44,16 @@ display(F_3);
 %% Draw the epipolar lines
 frame1 = read_frame(1);
 frame2 = read_frame(2);
+imshow([frame1 frame2]);
+hold on;
 [f1,f2]=keypoint_matching(frame1, frame2);
 p1 = [f1(1:2,:);ones(1,size(f1,2))];
 p2 = [f2(1:2,:);ones(1,size(f2,2))];
 F1 = eight_point(p1,p2);
 F2 = normalized_eight_point(p1,p2);
-F3 = RANSAC(p1,p2,30000);
-figure(1)
-subplot(1,3,1);
-imshow(frame1);
-hold on;
-draw_epipolar_line(F1,f1);
-title('eight-point algorithm')
-subplot(1,3,2);
-imshow(frame1);
-hold on;
-draw_epipolar_line(F2,f1);
-title('normalized eight-point')
-subplot(1,3,3);
-imshow(frame1);
-hold on;
-draw_epipolar_line(F3,f1);
-title('RANSAC');
+F3 = RANSAC(p1,p2,10000);
+
+% imshow(frame1);
+% hold on;
+% h1 = vl_plotframe(f1) ;
+% set(h1,'color','y','linewidth',3) ;
