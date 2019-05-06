@@ -20,5 +20,9 @@ function F = eight_point(pts1, pts2)
     % Enforce singularity of F.
     [U_f, D_f, V_f] = svd(F);
     D_f(end, end) = 0;
+<<<<<<< HEAD
     F = U_f * D_f * V_f'; 
+=======
+    F = U_f * D_f * V_f';   
+>>>>>>> master
 end
