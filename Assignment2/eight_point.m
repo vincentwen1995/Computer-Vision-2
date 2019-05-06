@@ -1,6 +1,6 @@
 function F = eight_point(pts1, pts2)
-    % pts1: [2, n] corresponding interesting points in image1.
-    % pts2: [2, n] corresponding interesting points in image2.
+    % pts1: [3, n] corresponding interesting points in image1.
+    % pts2: [3, n] corresponding interesting points in image2.
     n = size(pts1, 2);
     % Initialize A.    
     A = zeros(n, 9);    
