@@ -1,4 +1,5 @@
-close all;clc;clear all;
+% run('/Users/robbie/VLFEATROOT/toolbox/vl_setup')
+clc;clear all;close all;
 addpath('Utils/');
 %% Prepare the data
 % PVM = readPVM();
@@ -6,8 +7,8 @@ addpath('Utils/');
 % p1 = [PVM(1:2,:);ones(1,n)];
 % p2 = [PVM(3:4,:);ones(1,n)];
 frame1 = read_frame(1);
-frame2 = read_frame(2);
-[f1,f2]=keypoint_matching(frame1, frame2);
+frame2 = read_frame(30);
+[f1,f2]=keypoint_matching(frame1, frame2,8);
 p1 = [f1(1:2,:);ones(1,size(f1,2))];
 p2 = [f2(1:2,:);ones(1,size(f2,2))];
 %% 3.1 Eight-point Algorithm
@@ -40,8 +41,8 @@ display(F_2);
 
 %% 3.3 Normalized Eight-point Algorithm with RANSAC
 disp('3.3 Normalized Eight-point Algorithm with RANSAC');
-Iterations = 20000;
-threshold = 1e-3;
+Iterations = 10000;
+threshold = 10;
 [F_3,Inliners] = RANSAC(p1,p2,Iterations,threshold);
 display(threshold);
 num_inliners=sum(Inliners);
@@ -50,19 +51,48 @@ display(F_3);
 
 %% Draw the epipolar lines
 disp('Drawing the epipolar lines...');
-figure(1)
-subplot(1,3,1);
+subplot(3,2,1);
 imshow(frame1);
+hold on;
+draw_epipolar_line(F_1',f2);
+title('eight-point algorithm frame 1');
+subplot(3,2,2);
+imshow(frame2);
 hold on;
 draw_epipolar_line(F_1,f1);
-title('eight-point algorithm')
-subplot(1,3,2);
+title('eight-point algorithm frame 2');
+
+subplot(3,2,3);
 imshow(frame1);
+hold on;
+draw_epipolar_line(F_2',f2);
+title('normalized eight-point frame 1')
+subplot(3,2,4);
+imshow(frame2);
 hold on;
 draw_epipolar_line(F_2,f1);
-title('normalized eight-point')
-subplot(1,3,3);
+title('normalized eight-point frame 2')
+subplot(3,2,5);
 imshow(frame1);
 hold on;
+draw_epipolar_line(F_3',f2);
+title('RANSAC frame 1');
+subplot(3,2,6);
+imshow(frame2);
+hold on;
 draw_epipolar_line(F_3,f1);
-title('RANSAC');
+title('RANSAC frame 2');
+
+%% 4 Chaining 
+disp('4 Chaining');
+disp('Computing the Point View Matrix...');
+if isfile('PVM.mat')
+    load('PVM.mat');
+else
+    PVM = chaining();
+    save('PVM.mat','PVM');
+end
+figure();
+imshow(PVM);
+dense_PVM = get_dense_PVM(PVM);
+
