@@ -99,21 +99,44 @@ else
 end
 figure();
 imshow(PVM);
-% Select a dense block from the point-view matrix
-% PVM = readPVM();
-D = get_dense_PVM(PVM);
-fprintf("Size of dense block:%d*%d\n",size(D));
 
-[M,S]=factorization(D);
+%% Structure from Motion
+disp('5 Structure from Motion')
 
-% plot the camera positions
+method = 'dense';
+switch method
+    case 'dense'
+        % Select a dense block from the point-view matrix
+        D = get_dense_PVM(PVM);
+        fprintf("Size of dense block:%d*%d\n",size(D));
+%         option = '';
+        option = 'affine_ambiguity';        
+        [M,S]=factorization(D, option);
+        
+    case 'step4'
+        % Use the method described in step 4.
+    case 'PVM.txt'
+        % Use the provided PointViewMatrix.txt.
+        PVM = readPVM();
+%         option = '';
+        option = 'affine_ambiguiity';        
+        [M, S] = factorization(PVM, option);
+        
+        
+end
+
+
+% Plot the motion (camera positions).
 figure()
 plot3(M(:, 1), M(:, 2), M(:, 3), '.')
+% Plot the shape (3D points).
 figure()
 plot3(S(1, :), S(2, :), S(3, :), '.')
-% plot the resulting points contained in S
+% Plot the surface of the 3D points.
 figure()
 tri = delaunay(S(1, :), S(2, :));
 trisurf(tri, S(1, :), S(2, :), S(3, :));
 hold on
 plot3(S(1, :), S(2, :), S(3, :), '.')
+
+
