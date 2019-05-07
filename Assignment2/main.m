@@ -1,6 +1,7 @@
 % run('/Users/robbie/VLFEATROOT/toolbox/vl_setup')
 clc;clear all;close all;
 addpath('Utils/');
+warning('off','all')
 %% Prepare the data
 % PVM = readPVM();
 % [m,n] = size(PVM);
@@ -51,33 +52,36 @@ display(F_3);
 
 %% Draw the epipolar lines
 disp('Drawing the epipolar lines...');
-subplot(3,2,1);
+figure();
+subplot(1,2,1);
 imshow(frame1);
 hold on;
 draw_epipolar_line(F_1',f2);
 title('eight-point algorithm frame 1');
-subplot(3,2,2);
+subplot(1,2,2);
 imshow(frame2);
 hold on;
 draw_epipolar_line(F_1,f1);
 title('eight-point algorithm frame 2');
 
-subplot(3,2,3);
+figure();
+subplot(1,2,1);
 imshow(frame1);
 hold on;
 draw_epipolar_line(F_2',f2);
 title('normalized eight-point frame 1')
-subplot(3,2,4);
+subplot(1,2,2);
 imshow(frame2);
 hold on;
 draw_epipolar_line(F_2,f1);
 title('normalized eight-point frame 2')
-subplot(3,2,5);
+figure();
+subplot(1,2,1);
 imshow(frame1);
 hold on;
 draw_epipolar_line(F_3',f2);
 title('RANSAC frame 1');
-subplot(3,2,6);
+subplot(1,2,2);
 imshow(frame2);
 hold on;
 draw_epipolar_line(F_3,f1);
@@ -95,5 +99,21 @@ else
 end
 figure();
 imshow(PVM);
-dense_PVM = get_dense_PVM(PVM);
+% Select a dense block from the point-view matrix
+% PVM = readPVM();
+D = get_dense_PVM(PVM);
+fprintf("Size of dense block:%d*%d\n",size(D));
 
+[M,S]=factorization(D);
+
+% plot the camera positions
+figure()
+plot3(M(:, 1), M(:, 2), M(:, 3), '.')
+figure()
+plot3(S(1, :), S(2, :), S(3, :), '.')
+% plot the resulting points contained in S
+figure()
+tri = delaunay(S(1, :), S(2, :));
+trisurf(tri, S(1, :), S(2, :), S(3, :));
+hold on
+plot3(S(1, :), S(2, :), S(3, :), '.')

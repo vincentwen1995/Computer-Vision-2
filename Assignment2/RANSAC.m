@@ -1,10 +1,10 @@
 function [F,Inliers]=RANSAC(points1,points2,iterations,threshold)
 if nargin == 3
-   threshold=1e-3;
+   threshold=0.1;
 end
 if nargin == 2
-   threshold=1e-3;
-   iterations=1e4;
+   threshold=0.1;
+   iterations=100;
 end
 max_count=0;
 for i = 1:iterations

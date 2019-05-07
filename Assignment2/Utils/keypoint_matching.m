@@ -1,6 +1,6 @@
 function [fa_matches,fb_matches]=keypoint_matching(Ia,Ib,peak_thresh)
     if nargin == 2
-        peak_thresh=2;
+        peak_thresh=1;
     end
     Ia=single(Ia);
     Ib=single(Ib);
