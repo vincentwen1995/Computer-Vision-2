@@ -1,10 +1,10 @@
 run('VLFEATROOT/toolbox/vl_setup')
 clc;clear all;close all;
 %% Image Alignment 
-Ia=imread("boat1.pgm");
-Ib=imread("boat2.pgm");
+Ia=read_frame(1);
+Ib=read_frame(2);
 imshow([Ia Ib]) ;
-[fa,fb]=keypoint_matching(Ia,Ib);
+[fa,fb]=keypoint_matching(Ia,Ib,2);
 
 % Take a random subset (with set size set to 10) 
 perm=randperm(size(fa,2));
