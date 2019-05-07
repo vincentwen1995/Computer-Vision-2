@@ -42,11 +42,11 @@ display(F_2);
 %% 3.3 Normalized Eight-point Algorithm with RANSAC
 disp('3.3 Normalized Eight-point Algorithm with RANSAC');
 Iterations = 10000;
-threshold = 10;
-[F_3,Inliners] = RANSAC(p1,p2,Iterations,threshold);
+threshold = 1e-3;
+[F_3,inliers] = RANSAC(p1,p2,Iterations,threshold);
 display(threshold);
-num_inliners=sum(Inliners);
-display(num_inliners);
+num_inliers=sum(inliers);
+display(num_inliers);
 display(F_3);
 
 %% Draw the epipolar lines
@@ -85,10 +85,11 @@ title('RANSAC frame 2');
 
 %% 4 Chaining 
 disp('4 Chaining');
-disp('Computing the Point View Matrix...');
-if isfile('PVM.mat')
+if isfile('PVM.mat') 
+    disp('Loading the Point View Matrix...');
     load('PVM.mat');
 else
+    disp('Computing the Point View Matrix...');
     PVM = chaining();
     save('PVM.mat','PVM');
 end
