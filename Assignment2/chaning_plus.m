@@ -1,13 +1,13 @@
-function [PVM]=chaining(img_set_size)
-if nargin == 0
-    img_set_size=2;
-end
+clear all;
+img_set_size = 4;
 [m1,m2]= get_matching_points(1,2);
 PVM=[m1;m2];
 for index=3:49
     if index>img_set_size
         new_PVM = zeros(2,size(PVM,2));
         for n = 1:img_set_size-1
+            display(index);
+            display(n);
             prev_indice = size(PVM,1)-2*n+1;
             prev_PVM = PVM(prev_indice:prev_indice+1,:);
             [m1,m2] = get_matching_points(index-n,index);
@@ -25,6 +25,7 @@ for index=3:49
                 end
             end
         end
+        PVM=[PVM;new_PVM];
     else
         prev_PVM = PVM(end-1:end,:);
         [m1,m2] = get_matching_points(index-1,index);
@@ -42,13 +43,6 @@ for index=3:49
                 new_PVM=[new_PVM m2(:,i)];
             end
         end
+        PVM=[PVM;new_PVM];
     end
-    PVM=[PVM;new_PVM];
-    fprintf('Frame:%2d of 49 \t PVM Size:%4d*%4d \n',index,size(PVM,1),size(PVM,2));
 end
-end
-
-
-
-
-
