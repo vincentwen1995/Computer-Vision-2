@@ -1,4 +1,4 @@
-run('/Users/robbie/VLFEATROOT/toolbox/vl_setup')
+% run('/Users/robbie/VLFEATROOT/toolbox/vl_setup')
 clc;clear all;close all;
 addpath('Utils/');
 warning('off','all')
@@ -7,15 +7,17 @@ warning('off','all')
 % [m,n] = size(PVM);
 % p1 = [PVM(1:2,:);ones(1,n)];
 % p2 = [PVM(3:4,:);ones(1,n)];
-frame1 = read_frame(1);
-frame2 = read_frame(2);
+frame_num1 = 1;
+frame_num2 = 49;
+frame1 = read_frame(frame_num1);
+frame2 = read_frame(frame_num2);
 [f1,f2]=keypoint_matching(frame1, frame2,8);
 p1 = [f1(1:2,:);ones(1,size(f1,2))];
 p2 = [f2(1:2,:);ones(1,size(f2,2))];
 %% 3.1 Eight-point Algorithm
 disp('3.1 Eight-point Algorithm');
 F_1=eight_point(p1,p2);
-display(F_1);
+disp(F_1);
 
 %% 3.2.1 Normalization
 disp('3.2.1 Normalization');
@@ -28,124 +30,167 @@ y = p_hat1(2,:);
 mx_hat = mean(x,2);
 my_hat = mean(y,2);
 d_hat = mean(sqrt((x - mx_hat).^2 + (y - my_hat).^2), 2);
-display(mx_hat);display(my_hat);display(d_hat);
+disp(mx_hat);
+disp(my_hat);
+disp(d_hat);
 
 %% 3.2.2 Find a fundamental matrix:
 disp('3.2.2 Find a fundamental matrix');
 F_prime = eight_point(p_hat1,p_hat2);
-display(F_prime);
+disp(F_prime);
 
 %% 3.2.3 Denormalization:
 disp('3.2.3 Denormalization')
 F_2 = T2'*F_prime*T1;
-display(F_2);
+disp(F_2);
 
 %% 3.3 Normalized Eight-point Algorithm with RANSAC
 disp('3.3 Normalized Eight-point Algorithm with RANSAC');
 Iterations = 10000;
 threshold = 1e-3;
 [F_3,inliers] = RANSAC(p1,p2,Iterations,threshold);
-display(threshold);
+disp(threshold);
 num_inliers=sum(inliers);
-display(num_inliers);
-display(F_3);
+disp(num_inliers);
+disp(F_3);
 
 %% Draw the epipolar lines
-disp('Drawing the epipolar lines...');
-figure();
-subplot(3,2,1);
-imshow(frame1);
+disp('Drawing the epipolar lines...')
+figure()
+subplot(3,2,1)
+imshow(frame1)
+hold on
+draw_epipolar_line(F_1',f2)
+hold off
+title(sprintf('Eight-point Frame %d', frame_num1))
+subplot(3,2,2)
+imshow(frame2)
+hold on
+draw_epipolar_line(F_1,f1)
+hold off
+title(sprintf('Eight-point Frame %d', frame_num2))
+subplot(3,2,3)
+imshow(frame1)
+hold on
+draw_epipolar_line(F_2',f2)
+hold off
+title(sprintf('Normalized Eight-point Frame %d', frame_num1))
+subplot(3,2,4)
+imshow(frame2)
+hold on
+draw_epipolar_line(F_2,f1)
+hold off
+title(sprintf('Normalized Eight-point Frame %d', frame_num2))
+subplot(3,2,5)
+imshow(frame1)
 hold on;
-draw_epipolar_line(F_1',f2);
-title('eight-point algorithm frame 1');
-subplot(3,2,2);
-imshow(frame2);
-hold on;
-draw_epipolar_line(F_1,f1);
-title('eight-point algorithm frame 2');
-subplot(3,2,3);
-imshow(frame1);
-hold on;
-draw_epipolar_line(F_2',f2);
-title('normalized eight-point frame 1')
-subplot(3,2,4);
-imshow(frame2);
-hold on;
-draw_epipolar_line(F_2,f1);
-title('normalized eight-point frame 2')
-subplot(3,2,5);
-imshow(frame1);
-hold on;
-draw_epipolar_line(F_3',f2);
-title('RANSAC frame 1');
-subplot(3,2,6);
-imshow(frame2);
-hold on;
-draw_epipolar_line(F_3,f1);
-title('RANSAC frame 2');
+draw_epipolar_line(F_3',f2)
+hold off
+title(sprintf('RANSAC Frame %d', frame_num1))
+subplot(3,2,6)
+imshow(frame2)
+hold on
+draw_epipolar_line(F_3,f1)
+hold off
+title(sprintf('RANSAC Frame %d', frame_num2))
+saveas(gca, 'results/epipolar.eps', 'epsc')
 
 %% 4 Chaining 
 disp('4 Chaining');
-if isfile('PVM.mat') 
+if isfile('PVM_2.mat') 
     disp('Loading the Point View Matrix...');
-    load('PVM.mat');
+    load('PVM_2.mat');
 else
     disp('Computing the Point View Matrix...');
     PVM = chaining();
-    save('PVM.mat','PVM');
+    save('PVM_2.mat','PVM');
 end
-
-% Show PVM with different size of image set
-load('PVM_2.mat');
-PVM_2 = PVM;
-load('PVM_3.mat');
-PVM_3 = PVM;
-load('PVM_4.mat');
-PVM_4 = PVM;
-figure();
-subplot(3,1,1);imshow(PVM_2);
-subplot(3,1,2);imshow(PVM_3);
-subplot(3,1,3);imshow(PVM_4);
 
 %% Structure from Motion
 disp('5 Structure from Motion')
-method = 'dense';
+% Show PVM with different size of image set.
+if isfile('PVM_2.mat')
+    load('PVM_2.mat');
+    PVM_2 = PVM;
+else
+    PVM_2 = chaining();
+end
+
+if isfile('PVM_3.mat')
+    load('PVM_3.mat');
+    PVM_3 = PVM;
+else
+    PVM_3 = chaining(3);
+end
+
+if isfile('PVM_4.mat')    
+    load('PVM_4.mat');
+    PVM_4 = PVM;
+else
+    PVM_4 = chaining(4);
+end
+
+figure();
+subplot(3,1,1)
+imshow(PVM_2)
+title('2 consecutive images')
+subplot(3,1,2)
+imshow(PVM_3)
+title('3 consecutive images')
+subplot(3,1,3)
+imshow(PVM_4)
+title('4 consecutive images')
+saveas(gca, 'results/step4.eps', 'epsc')
+
+method = 'PVM'; % 'dense', 'step4', 'PVM'
+sub_method = ''; % '3', '4' ...
+option = ''; % '', 'affine_ambiguity'
 switch method
     case 'dense'
         % Select a dense block from the point-view matrix
-        D = get_dense_PVM(PVM);
-        fprintf("Size of dense block:%d*%d\n",size(D));
-%         option = '';
-        option = 'affine_ambiguity';        
-        [M,S]=factorization(D, option);
-        
+        D = get_dense_PVM(PVM_2);        
+
     case 'step4'
         % Use the method described in step 4.
-    case 'PVM.txt'
+        if strcmp(sub_method, '3')
+            D = get_dense_PVM(PVM_3);
+        else
+            D = get_dense_PVM(PVM_4);
+        end
+        
+    case 'PVM'
         % Use the provided PointViewMatrix.txt.
-        D= readPVM();
-%         option = '';
-        option = 'affine_ambiguiity';        
-        [M, S] = factorization(D, option);
-        
-        
+        D= readPVM();        
 end
-% figure();
-% imshow(read_frame(1));
-% hold on;
-% scatter(D(1,:),D(2,:));
+fprintf("Size of dense block:%d*%d\n",size(D));
+[M,S]=factorization(D, option);
 
-% Plot the motion (camera positions).
+% Plot the keypoints in frame1 used for reconstruction.
 figure()
-plot3(M(:, 1), M(:, 2), M(:, 3), '.')
+imshow(read_frame(1))
+hold on
+scatter(D(1,:),D(2,:), 'rx')
+hold off
+
+% % Plot the motion (camera positions).
+% figure()
+% c = [ones(1, size(M, 1)); linspace(0, 1, size(M,1)); ones(1, size(M, 1))]';
+% scatter3(M(:, 1), M(:, 2), M(:, 3), [], c, '.')
+% % plot3(M(:, 1), M(:, 2), -M(:, 3), '.')
+
 % Plot the shape (3D points).
 figure()
-plot3(S(1, :), S(2, :), S(3, :), '.')
+scatter3(S(1, :), S(2, :), S(3, :), 'r.')
+view(-15, 15)
+saveas(gca, strcat('results/', method, '_', sub_method, '_',option, '_','shape.eps'), 'epsc')
 % Plot the surface of the 3D points.
 figure()
 tri = delaunay(S(1, :), S(2, :));
-trimesh(tri, S(1, :), S(2, :), -S(3, :));
+trimesh(tri, S(1, :), S(2, :), S(3, :));
 hold on
-plot3(S(1, :), S(2, :), -S(3, :), '.')
+scatter3(S(1, :), S(2, :), S(3, :), 'r.')
+view(-15, 15)
+hold off
+saveas(gca, strcat('results/', method, '_', sub_method, '_',option, '_', 'shape_surface.eps'), 'epsc')
 
 
