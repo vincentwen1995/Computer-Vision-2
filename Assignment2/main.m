@@ -132,36 +132,27 @@ disp('4 Chaining');
 if isfile('PVM_2.mat') 
     disp('Loading the Point View Matrix...');
     load('PVM_2.mat');
-else
-    disp('Computing the Point View Matrix...');
-    PVM = chaining();
-    save('PVM_2.mat','PVM');
-end
-
-%% Structure from Motion
-disp('5 Structure from Motion')
-% Show PVM with different size of image set.
-if isfile('PVM_2.mat')
-    load('PVM_2.mat');
     PVM_2 = PVM;
-else
-    PVM_2 = chaining();
-end
-
-if isfile('PVM_3.mat')
     load('PVM_3.mat');
     PVM_3 = PVM;
-else
-    PVM_3 = chaining(3);
-end
-
-if isfile('PVM_4.mat')    
     load('PVM_4.mat');
     PVM_4 = PVM;
 else
-    PVM_4 = chaining(4);
+    disp('Computing the Point View Matrix...');
+    disp('Size of Image Set:2');
+    PVM = chaining(2);
+    save('PVM_2.mat','PVM');
+    PVM_2 = PVM;
+    disp('Size of Image Set:3');
+    PVM = chaining(3);
+    save('PVM_3.mat','PVM');
+    PVM_3 = PVM;
+    disp('Size of Image Set:4');
+    PVM = chaining(4);
+    save('PVM_4.mat','PVM');
+    PVM_4 = PVM;
 end
-
+% Show PVM with different size of image set.
 figure();
 subplot(2,2,1)
 % imshow(PVM_2)
@@ -188,56 +179,11 @@ xlabel('Columns')
 ylabel('Rows')
 title('PointViewMatrix.txt')
 saveas(gca, 'results/step4.eps', 'epsc')
-
-method = 'PVM'; % 'dense', 'step4', 'PVM'
-sub_method = ''; % '3', '4' ...
-option = ''; % '', 'affine_ambiguity'
-switch method
-    case 'dense'
-        % Select a dense block from the point-view matrix
-        D = get_dense_PVM(PVM_2);        
-
-    case 'step4'
-        % Use the method described in step 4.
-        if strcmp(sub_method, '3')
-            D = get_dense_PVM(PVM_3);
-        else
-            D = get_dense_PVM(PVM_4);
-        end
-        
-    case 'PVM'
-        % Use the provided PointViewMatrix.txt.
-        D= readPVM();        
-end
-fprintf("Size of dense block:%d*%d\n",size(D));
-[M,S]=factorization(D, option);
-
-% Plot the keypoints in frame1 used for reconstruction.
-figure()
-imshow(read_frame(1))
-hold on
-scatter(D(1,:),D(2,:), 'rx')
-hold off
-
-% % Plot the motion (camera positions).
-% figure()
-% c = [ones(1, size(M, 1)); linspace(0, 1, size(M,1)); ones(1, size(M, 1))]';
-% scatter3(M(:, 1), M(:, 2), M(:, 3), [], c, '.')
-% % plot3(M(:, 1), M(:, 2), -M(:, 3), '.')
-
-% Plot the shape (3D points).
-figure()
-scatter3(S(1, :), S(2, :), -S(3, :), 'r.')
-view(-15, 15)
-saveas(gca, strcat('results/', method, '_', sub_method, '_',option, '_','shape.eps'), 'epsc')
-% Plot the surface of the 3D points.
-figure()
-tri = delaunay(S(1, :), S(2, :));
-trimesh(tri, S(1, :), S(2, :), -S(3, :));
-hold on
-scatter3(S(1, :), S(2, :), -S(3, :), 'r.')
-view(-15, 15)
-hold off
-saveas(gca, strcat('results/', method, '_', sub_method, '_',option, '_', 'shape_surface.eps'), 'epsc')
-
-
+%% Structure from Motion
+disp('5 Structure from Motion')
+D_2 = get_dense_PVM(PVM_2);
+plot_dense_block(D_2,true);
+D_4 = get_dense_PVM(PVM_4);
+plot_dense_block(D_4,false); 
+D = readPVM();
+plot_dense_block(D,true);

@@ -3,8 +3,8 @@ if nargin == 3
    threshold=1;
 end
 if nargin == 2
-   threshold=1;
-   iterations=100;
+   threshold=0.5;
+   iterations=200;
 end
 max_count=0;
 for i = 1:iterations
