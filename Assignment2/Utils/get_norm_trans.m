@@ -1,4 +1,4 @@
-function [T]= get_normarlize(points)
+function [T]= get_norm_trans(points)
 x = points(1,:);
 y = points(2,:);
 mx = mean(x,2);

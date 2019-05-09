@@ -6,6 +6,4 @@ for i=1:n
     y = (-line(1)*x - line(3))/line(2);
     plot(x,y, 'linewidth',1);
 end
-h1 = vl_plotframe(points) ;
-set(h1,'color','y','linewidth',1) ;
 end

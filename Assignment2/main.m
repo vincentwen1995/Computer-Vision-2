@@ -14,6 +14,20 @@ frame2 = read_frame(frame_num2);
 [f1,f2]=keypoint_matching(frame1, frame2,8);
 p1 = [f1(1:2,:);ones(1,size(f1,2))];
 p2 = [f2(1:2,:);ones(1,size(f2,2))];
+
+figure()
+imshow([frame1 frame2])
+hold on
+fa = f1;
+fb = f2;
+h1 = vl_plotframe(fa);
+set(h1,'color','y','linewidth',3);
+fb(1,:) = fb(1,:) + size(frame1, 2);
+h2 = vl_plotframe(fb);
+set(h2,'color','y','linewidth',3);
+hold off
+saveas(gca, 'results/matchings.eps', 'epsc')
+
 %% 3.1 Eight-point Algorithm
 disp('3.1 Eight-point Algorithm');
 F_1=eight_point(p1,p2);
@@ -47,7 +61,7 @@ disp(F_2);
 %% 3.3 Normalized Eight-point Algorithm with RANSAC
 disp('3.3 Normalized Eight-point Algorithm with RANSAC');
 Iterations = 10000;
-threshold = 1e-3;
+threshold = 1;
 [F_3,inliers] = RANSAC(p1,p2,Iterations,threshold);
 disp(threshold);
 num_inliers=sum(inliers);
@@ -61,36 +75,48 @@ subplot(3,2,1)
 imshow(frame1)
 hold on
 draw_epipolar_line(F_1',f2)
+h1 = vl_plotframe(f1) ;
+set(h1,'color','y','linewidth',1) ;
 hold off
 title(sprintf('Eight-point Frame %d', frame_num1))
 subplot(3,2,2)
 imshow(frame2)
 hold on
 draw_epipolar_line(F_1,f1)
+h2 = vl_plotframe(f2) ;
+set(h2,'color','y','linewidth',1) ;
 hold off
 title(sprintf('Eight-point Frame %d', frame_num2))
 subplot(3,2,3)
 imshow(frame1)
 hold on
 draw_epipolar_line(F_2',f2)
+h1 = vl_plotframe(f1) ;
+set(h1,'color','y','linewidth',1) ;
 hold off
 title(sprintf('Normalized Eight-point Frame %d', frame_num1))
 subplot(3,2,4)
 imshow(frame2)
 hold on
 draw_epipolar_line(F_2,f1)
+h2 = vl_plotframe(f2) ;
+set(h2,'color','y','linewidth',1) ;
 hold off
 title(sprintf('Normalized Eight-point Frame %d', frame_num2))
 subplot(3,2,5)
 imshow(frame1)
 hold on;
 draw_epipolar_line(F_3',f2)
+h1 = vl_plotframe(f1) ;
+set(h1,'color','y','linewidth',1) ;
 hold off
 title(sprintf('RANSAC Frame %d', frame_num1))
 subplot(3,2,6)
 imshow(frame2)
 hold on
 draw_epipolar_line(F_3,f1)
+h2 = vl_plotframe(f2) ;
+set(h2,'color','y','linewidth',1) ;
 hold off
 title(sprintf('RANSAC Frame %d', frame_num2))
 saveas(gca, 'results/epipolar.eps', 'epsc')
