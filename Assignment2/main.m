@@ -25,6 +25,12 @@ set(h1,'color','y','linewidth',3);
 fb(1,:) = fb(1,:) + size(frame1, 2);
 h2 = vl_plotframe(fb);
 set(h2,'color','y','linewidth',3);
+xa = fa(1, :) ;
+xb = fb(1, :) ;
+ya = fa(2, :) ;
+yb = fb(2, :) ;
+h = line([xa ; xb], [ya ; yb]) ;
+set(h,'linewidth', 2) ;
 hold off
 saveas(gca, 'results/matchings.eps', 'epsc')
 
