@@ -163,15 +163,30 @@ else
 end
 
 figure();
-subplot(3,1,1)
-imshow(PVM_2)
+subplot(2,2,1)
+% imshow(PVM_2)
+imagesc(PVM_2)
+xlabel('Columns')
+ylabel('Rows')
 title('2 consecutive images')
-subplot(3,1,2)
-imshow(PVM_3)
+subplot(2,2,2)
+% imshow(PVM_3)
+imagesc(PVM_3)
+xlabel('Columns')
+ylabel('Rows')
 title('3 consecutive images')
-subplot(3,1,3)
-imshow(PVM_4)
+subplot(2,2,3)
+% imshow(PVM_4)
+imagesc(PVM_4)
+xlabel('Columns')
+ylabel('Rows')
 title('4 consecutive images')
+subplot(2,2,4)
+% imshow(readPVM())
+imagesc(readPVM())
+xlabel('Columns')
+ylabel('Rows')
+title('PointViewMatrix.txt')
 saveas(gca, 'results/step4.eps', 'epsc')
 
 method = 'PVM'; % 'dense', 'step4', 'PVM'
@@ -212,15 +227,15 @@ hold off
 
 % Plot the shape (3D points).
 figure()
-scatter3(S(1, :), S(2, :), S(3, :), 'r.')
+scatter3(S(1, :), S(2, :), -S(3, :), 'r.')
 view(-15, 15)
 saveas(gca, strcat('results/', method, '_', sub_method, '_',option, '_','shape.eps'), 'epsc')
 % Plot the surface of the 3D points.
 figure()
 tri = delaunay(S(1, :), S(2, :));
-trimesh(tri, S(1, :), S(2, :), S(3, :));
+trimesh(tri, S(1, :), S(2, :), -S(3, :));
 hold on
-scatter3(S(1, :), S(2, :), S(3, :), 'r.')
+scatter3(S(1, :), S(2, :), -S(3, :), 'r.')
 view(-15, 15)
 hold off
 saveas(gca, strcat('results/', method, '_', sub_method, '_',option, '_', 'shape_surface.eps'), 'epsc')

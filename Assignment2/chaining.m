@@ -8,8 +8,8 @@ for index=3:49
     if index>img_set_size
         new_PVM = zeros(2,size(PVM,2));
         for n = 1:img_set_size-1
-            prev_indice = size(PVM,1)-2*n+1;
-            prev_PVM = PVM(prev_indice:prev_indice+1,:);
+            prev_indices = size(PVM,1)-2*n+1;
+            prev_PVM = PVM(prev_indices:prev_indices+1,:);
             [m1,m2] = get_matching_points(index-n,index);
             for i=1:size(m1,2)
                 unique = true;
