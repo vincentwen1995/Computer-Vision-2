@@ -1,4 +1,4 @@
-% run('/Users/robbie/VLFEATROOT/toolbox/vl_setup')
+run('/Users/robbie/VLFEATROOT/toolbox/vl_setup')
 clc;clear all;close all;
 addpath('Utils/');
 warning('off','all')
@@ -177,9 +177,9 @@ title('PointViewMatrix.txt')
 saveas(gca, 'results/step4.eps', 'epsc')
 %% Structure from Motion
 disp('5 Structure from Motion')
-D_2 = get_dense_PVM(PVM_2);
+D_2 = get_dense_PVM(PVM_2,'stitching');
 plot_dense_block(D_2,true);
-D_4 = get_dense_PVM(PVM_4);
-plot_dense_block(D_4,false); 
+D_4 = get_dense_PVM(PVM_4,'stitching');
+plot_dense_block(D_4,true); 
 D = readPVM();
 plot_dense_block(D,true);
