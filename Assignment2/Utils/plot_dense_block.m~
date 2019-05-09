@@ -1,6 +1,6 @@
 function plot_dense_block(D,reverse)
 [M,S]=factorization(D, 'affine_ambiguity');
-S = S(:,S(3,:)>-100);
+S = S(find(S(3,:)>-100)
 % Plot the points on image 
 figure();
 subplot(1,2,1);
