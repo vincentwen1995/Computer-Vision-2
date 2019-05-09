@@ -13,14 +13,11 @@ V = V(:,1:3);
 % Compute M and S.
 M = U * W.^0.5;
 S = W.^0.5 * V';
-
 if strcmp(option,  'affine_ambiguity')
     % Compute L from M * L * M' = Id, with d = 1
     L = pinv(M) * eye(size(M, 1)) * pinv(M');
-
     % Compute C from L by Cholesky decomposition: L = C * C'.
     C = chol(L,'lower');
-
     % Update M and S.
     M = M*C;
     S = pinv(C)*S;
