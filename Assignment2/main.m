@@ -1,4 +1,4 @@
-run('/Users/robbie/VLFEATROOT/toolbox/vl_setup')
+% run('/Users/robbie/VLFEATROOT/toolbox/vl_setup')
 clc;clear all;close all;
 addpath('Utils/');
 warning('off','all')
@@ -177,9 +177,59 @@ title('PointViewMatrix.txt')
 saveas(gca, 'results/step4.eps', 'epsc')
 %% Structure from Motion
 disp('5 Structure from Motion')
-D_2 = get_dense_PVM(PVM_2,'stitching');
-plot_dense_block(D_2,true);
-D_4 = get_dense_PVM(PVM_4,'stitching');
-plot_dense_block(D_4,true); 
-D = readPVM();
-plot_dense_block(D,true);
+option = {'dense', 'step4', 'PVM'};
+chain_option = {'', 'densify'};
+fact_option = {'', 'affine_ambiguity'};
+for i = 1:size(option, 2)
+    for j = 1:size(chain_option, 2)
+        for k = 1:size(fact_option, 2)
+            if strcmp(option{i}, 'dense')
+                D = get_dense_PVM(PVM_2, chain_option{j});
+                plot_dense_block(D, true, fact_option{k});
+            elseif strcmp(option{i}, 'step4')
+                D_2 = get_dense_PVM(PVM_2, chain_option{j});
+                [~,S]=factorization(D_2, fact_option{k});                
+                D_3 = get_dense_PVM(PVM_3, chain_option{j});
+                S = stitch(S, D_3, fact_option{k});
+                D_4 = get_dense_PVM(PVM_4, chain_option{j});
+                S = stitch(S, D_4, fact_option{k});
+                S = S(:,S(3,:)>-100);
+                % Plot the points on image 
+                figure();
+                subplot(1,2,1);
+                imshow(read_frame(1));
+                hold on;
+                plot(D(1,:),D(2,:),'yo');
+                subplot(1,2,2);
+                plot_trimesh(S(1, :), S(2, :), S(3, :));  
+                view(-45,-70)
+
+                grid on;
+                rotate3d on;
+                pbaspect([1 1 1]);                
+            elseif strcmp(option{i}, 'PVM')
+                D = readPVM();
+                plot_dense_block(D, true, fact_option{k})
+            end
+            saveas(gca, strcat('results/', option{i}, '_', chain_option{j}, '_', fact_option{k}, '.eps'), 'epsc')
+        end
+    end
+end
+% D_2 = get_dense_PVM(PVM_2, chain_option);
+% plot_dense_block(D_2, true, fact_option);
+% saveas(gca, strcat('results/dense_', chain_option))
+
+% chain_option = '';
+% fact_option = '';
+% 
+% D_2_stitch = get_dense_PVM(PVM_2,'stitching');
+% plot_dense_block(D_2_stitch,true, '');
+% 
+% D_3_stitch = get_dense_PVM(PVM_3,'stitching');
+% plot_dense_block(D_3_stitch,true);
+% 
+% D_4_stitch = get_dense_PVM(PVM_4,'stitching');
+% plot_dense_block(D_4_stitch,true); 
+% 
+% D = readPVM();
+% plot_dense_block(D,true);

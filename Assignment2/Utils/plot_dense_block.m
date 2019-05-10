@@ -1,5 +1,8 @@
-function plot_dense_block(D,reverse)
-[M,S]=factorization(D, 'affine_ambiguity');
+function plot_dense_block(D,reverse, option)
+if nargin == 2
+    option = '';
+end
+[M,S]=factorization(D, option);
 S = S(:,S(3,:)>-100);
 % Plot the points on image 
 figure();
