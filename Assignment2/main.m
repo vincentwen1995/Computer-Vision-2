@@ -3,10 +3,6 @@ clc;clear all;close all;
 addpath('Utils/');
 warning('off','all')
 %% Prepare the data
-% PVM = readPVM();
-% [m,n] = size(PVM);
-% p1 = [PVM(1:2,:);ones(1,n)];
-% p2 = [PVM(3:4,:);ones(1,n)];
 frame_num1 = 1;
 frame_num2 = 49;
 frame1 = read_frame(frame_num1);
@@ -187,12 +183,14 @@ for i = 1:size(option, 2)
                 D = get_dense_PVM(PVM_2, chain_option{j});
                 plot_dense_block(D, true, fact_option{k});
             elseif strcmp(option{i}, 'step4')
+                % Stitch the 3D point clouds.
                 D_2 = get_dense_PVM(PVM_2, chain_option{j});
                 [~,S]=factorization(D_2, fact_option{k});                
                 D_3 = get_dense_PVM(PVM_3, chain_option{j});
                 S = stitch(S, D_3, fact_option{k});
                 D_4 = get_dense_PVM(PVM_4, chain_option{j});
                 S = stitch(S, D_4, fact_option{k});
+                % Filter out outliers.
                 S = S(:,S(3,:)>-100);
                 S = S(:,S(3,:)<500);
                 % Plot the points on image 
