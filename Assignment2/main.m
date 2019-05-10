@@ -194,16 +194,16 @@ for i = 1:size(option, 2)
                 D_4 = get_dense_PVM(PVM_4, chain_option{j});
                 S = stitch(S, D_4, fact_option{k});
                 S = S(:,S(3,:)>-100);
+                S = S(:,S(3,:)<500);
                 % Plot the points on image 
                 figure();
                 subplot(1,2,1);
                 imshow(read_frame(1));
                 hold on;
-                plot(D(1,:),D(2,:),'yo');
+                plot(D_4(1,:),D_4(2,:),'yo');
                 subplot(1,2,2);
                 plot_trimesh(S(1, :), S(2, :), S(3, :));  
                 view(-45,-70)
-
                 grid on;
                 rotate3d on;
                 pbaspect([1 1 1]);                
@@ -215,21 +215,3 @@ for i = 1:size(option, 2)
         end
     end
 end
-% D_2 = get_dense_PVM(PVM_2, chain_option);
-% plot_dense_block(D_2, true, fact_option);
-% saveas(gca, strcat('results/dense_', chain_option))
-
-% chain_option = '';
-% fact_option = '';
-% 
-% D_2_stitch = get_dense_PVM(PVM_2,'stitching');
-% plot_dense_block(D_2_stitch,true, '');
-% 
-% D_3_stitch = get_dense_PVM(PVM_3,'stitching');
-% plot_dense_block(D_3_stitch,true);
-% 
-% D_4_stitch = get_dense_PVM(PVM_4,'stitching');
-% plot_dense_block(D_4_stitch,true); 
-% 
-% D = readPVM();
-% plot_dense_block(D,true);
